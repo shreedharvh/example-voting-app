@@ -1,34 +1,44 @@
-pipeline{
-    agent any
-    
-    tools{
-	maven "Maven 3.6.1"
-    }
+pipeline {
+  agent any
 
-    stages{
-        stage(build){
-            steps{
-                echo 'building worker app'
-		dir('worker'){
-                	sh 'mvn compile'
-		}
-            }
-        }
-        stage(two){
-            steps{
-                echo 'Beautiful day to you!'
-            }
-        }
-        stage(three){
-            steps{
-                echo 'Good bye!'
-                sleep 5
-            }
-        }
+  tools{
+    maven 'maven 3.6.1'
+
+  }
+
+  stages{
+      stage(one){
+          steps{
+              echo 'Compiling worker app..'
+              dir('worker'){
+                sh 'mvn compile'
+              }
+          }
+      }
+      stage(two){
+          steps{
+              echo 'Running Unit Tets on worker app..'
+              dir('worker'){
+                sh 'mvn clean test'
+              }
+
+          }
+      }
+      stage(three){
+          steps{
+              echo 'Packaging worker app'
+              dir('worker'){
+                sh 'mvn package -DskipTests'
+              }
+
+          }
+      }
+  }
+
+  post{
+    always{
+        archiveArtifacts artifacts: '**/target/*.jar', fingerprint: true
+        echo 'Building multibranch pipeline for worker is completed..'
     }
-    post{
-        always{
-            echo 'Always a happy day!'
-        }
-    }
+  }
 }
