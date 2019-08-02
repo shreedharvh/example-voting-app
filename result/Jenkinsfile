@@ -8,30 +8,29 @@ pipeline {
 
   stages{
       stage('build'){
-          steps{
-              echo 'Compiling result app..'
-              dir('result'){
-                sh 'npm install'
-              }
-          }
+        when {
+          branch 'master'
+          changeset "**/worker/**"
+        }
+        steps{
+            echo 'Compiling result app..'
+            dir('result'){
+              sh 'npm install'
+            }
+        }
       }
       stage(two){
-          steps{
-              echo 'Running Unit Tets on result app..'
-              dir('result'){
-                sh 'npm test'
-              }
+        when {
+          branch 'master'
+          changeset "**/worker/**"
+        }
+        steps{
+            echo 'Running Unit Tets on result app..'
+            dir('result'){
+              sh 'npm test'
+            }
 
-          }
-      }
-      stage(three){
-          steps{
-              echo 'Packaging worker app'
-              dir('result'){
-                echo 'post test'
-              }
-
-          }
+        }
       }
   }
 }
